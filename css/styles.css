@@ -1,0 +1,19 @@
+.logoUNIR {
+    height: 100px;
+}
+
+.bigDataImg {
+    height: 150px;
+    width: 150px;
+}
+
+.imgProy {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+}
+
+.vizprev {
+    background-color: #eaeae1;
+    border: 1px solid lightslategray;
+}
