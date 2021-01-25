@@ -8,12 +8,26 @@
 }
 
 .imgProy {
-    height: 80px;
-    width: 80px;
+    height: 100px;
     object-fit: cover;
 }
 
 .vizprev {
     background-color: #eaeae1;
     border: 1px solid lightslategray;
+}
+
+.ejes {
+    font-family: 'Arial';
+    font-size: 12px;
+}
+
+.tituloGrafica {
+    font-family: 'Helvetica';
+    font-size: 18px;
+}
+
+.leyendas {
+    font-family: 'Arial';
+    font-size: 30px;
 }
