@@ -11,8 +11,7 @@ margins = {top: 50, left:70, right:15, bottom:50}
 
 ancho = ancho_total - margins.left - margins.right
 alto  = alto_total - margins.top - margins.bottom
-    
-// Variables global, incluye datos
+
 svg = graf.append('svg')
           .style('width', `${ ancho_total }px`)
           .style('height',`${ alto_total }px`)
@@ -39,8 +38,6 @@ banco = d3.scaleBand()
 
 // -- Grupos/capas ---
 
-//yAxGroup = g.append('g')
-
 yAxisGroup = g.append('g')
               .attr('class', 'ejes')
 
@@ -48,11 +45,7 @@ xAxisGroup = g.append('g')
               .attr('transform', `translate(0, ${ alto })`)
               .attr('class', 'ejes')
 
-
-/////////////////////inicia one////////////////////////77
-
-// (1) Variables globales para determinar que mostrar y
-//     poder obtener los datos del select
+// (1) Variables globales
 comboAnios = 'todos'
 anioSelect = d3.select('#anio')
 
@@ -76,26 +69,6 @@ titulo = g.append('text')
 
 dataArray = []
 
-
-///////termina one///////
-
-// Render de la gráfica
-/*
-function render(data) {
-    bars =  g.selectAll('rect')
-             .data(data)
-    bars.enter()
-        .append('rect')
-        .style('width', d => `${x.bandwidth()}px`)
-        .style('height', d => `${alto - y(d.solicitudes)}px`)
-        .style('x', d => `${(x(d.solicitudes))}px`)
-        .style('y', d => `${(y(d.solicitudes))}px`)
-        .style('fill', d => color(d.anio))  
-    yAxCall = d3.axisLeft(y)
-    yAxisGroup.call(yAxCall)   
-}
-*/
-
 function render(data) {
 
     if(comboAnios == "todos"){
@@ -110,7 +83,7 @@ function render(data) {
                 .style('fill', '#eaeae1')
                 .style('x', d => x(d.solicitudes) + 'px')
         .transition()
-        //.ease(d3.easeElastic)
+
         .duration(1500)
                 .style('y', d => `${(y(d.solicitudes))}px`)
                 .style('height', d => `${alto - y(d.solicitudes)}px`)
@@ -144,8 +117,7 @@ function render(data) {
             .style('x', d => x(d.banco) + 'px')
             .merge(bars)
             .transition()
-            // https://bl.ocks.org/d3noob/1ea51d03775b9650e8dfd03474e202fe
-            // .ease(d3.easeElastic)
+
             .duration(2000)
                 .style('x', d => x(d.banco) + 'px')
                 .style('y', d => (y(d[metrica])) + 'px')
@@ -164,7 +136,7 @@ function render(data) {
     
         yAxisCall = d3.axisLeft(y)
                     .ticks(3)
-                    .tickFormat(d => d + ((metrica == 'monto') ? 'm.' : ''))
+                    .tickFormat(d => d + ((metrica == 'monto') ? ' B' : ' m'))
         yAxisGroup.transition()
                 .duration(2000)
                 .call(yAxisCall)
@@ -177,8 +149,6 @@ function render(data) {
                 .attr('x', '0px')
                 .attr('y', '10px')
                 .attr('text-anchor', 'middle')
-                //.attr('transform', 'rotate(-90)')
-
     }
   }
 
@@ -207,11 +177,6 @@ d3.csv('/data/DatasetTarjetasDebito.csv').then(function (data) {
     // V. Despliegue
     frame()
 
-    // Asignación de dominio de los escaladores
-    //nroSolsMax = d3.max(data, d => d.solicitudes)
-    //y.domain([0, nroSolsMax])
-    //x.domain(data.map(d => d.solicitudes))
-    //render(dataArray)
 }).catch(e => {
     console.log('No se tuvo acceso al archivo: ' + e.message)
 })
@@ -224,23 +189,12 @@ function frame() {
       console.log("anios"+comboAnios)
       dataframe = d3.filter(dataArray, d => d.anio == comboAnios)
     }
-  
-    //dataframe.sort((a, b) => {
-     // return ascendente ? d3.ascending(a[metrica], b[metrica]) : d3.descending(a[metrica], b[metrica])
-      //
-      // Es equivalente a...
-      //
-      // return ascendente ? a[metrica] - b[metrica] : b[metrica] - a[metrica]
-    //})
-  
     
-    // Calculaar la altura más alta dentro de
-    // los datos
+    // Calculaar la altura más alta dentro de los datos
     console.log("metrica"+metrica)
     nroSolsMax = d3.max(dataframe, d => d[metrica])
     console.log("max"+nroSolsMax)
-    // Creamos una función para calcular la altura
-    // de las barras y que quepan en nuestro canvas
+    // Creamos una función para calcular la altura de las barras y que quepan en nuestro canvas
     y.domain([0, nroSolsMax])
 
     if(comboAnios == "todos"){
