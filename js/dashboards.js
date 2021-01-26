@@ -58,10 +58,21 @@ xAxisGroup = g.append('g')
 yAxisGroup = g.append('g')
               .attr('class', 'ejes')
 
+titulo = g.append('text')
+    .attr('x', `${ancho / 2}px`)
+    .attr('y', '-5px')
+    .attr('text-anchor', 'middle')
+    .attr('class', 'titulo-grafica')
+    .attr('id', 'titulo-graf')
+    
+container = document.getElementById("titulo-graf");
+
 dataArray = []
 
 function render(data) {
-    console.log("Entro a render")
+
+    newContent = ""
+    startTitulo = (metrica == "monto") ? "Montos " : "Número "
     if(comboAnios == "todos"){
         console.log(`Años: ${comboAnios}`)
         bars =  g.selectAll('rect')
@@ -84,12 +95,12 @@ function render(data) {
                 .style('fill', d => color(d.anio))
                 .style('width', d => `${x.bandwidth()}px`)
         bars.exit()
-            /*.transition()
-            .duration(1500)
-            .style('height', '0px')
-            .style('y', d => `${y(0)}px`)
-            .style('fill', '#000000') */
-            .remove() 
+        .transition()
+        .duration(1500)
+        .style('height', '0px')
+        .style('y', d => `${y(0)}px`)
+        .style('fill', '#000000')
+        .remove() 
         // Ejes
         yAxCall = d3.axisLeft(y)
                     .tickFormat(d => d + ((metrica == 'monto') ? ' B' : ' m'))
@@ -103,6 +114,8 @@ function render(data) {
                 .attr('x', '0')
                 .attr('y', '10')
                 .attr('text-anchor', 'middle')
+
+        newContent = startTitulo + " de operaciones de tarjetas de débito (2015 - 2020)";
     } else {    
         bars = g.selectAll('rect')
                 .data(data, d => d.banco)
@@ -142,7 +155,13 @@ function render(data) {
                 .attr('x', '0px')
                 .attr('y', '10px')
                 .attr('text-anchor', 'middle')
+
+        newContent = startTitulo + " de operaciones de tarjetas de débito (" + comboAnios + ")";
     }
+
+    //update titulo de grafica
+    container.innerHTML= newContent; 
+    console.log(newContent);
   }
 
 // Carga de datos - los montos se escalan a miles de millones y el nro de opns a miles
