@@ -1,4 +1,4 @@
-// Configuración del canvas
+// -- Configuración del canvas --
 graf = d3.select('#graf')
 
 ancho_total = graf.style('width').slice(0, -2)
@@ -30,14 +30,12 @@ x = d3.scaleBand()
       .paddingInner(0.1)
       .paddingOuter(0.1)
 
-
 color = d3.scaleOrdinal()
           .range(d3.schemeDark2)
 
 banco = d3.scaleBand()
 
-// -- Grupos/capas ---
-
+// -- Grupos/capas --
 yAxisGroup = g.append('g')
               .attr('class', 'ejes')
 
@@ -45,7 +43,7 @@ xAxisGroup = g.append('g')
               .attr('transform', `translate(0, ${ alto })`)
               .attr('class', 'ejes')
 
-// (1) Variables globales
+// -- Variables globales --
 comboAnios = 'todos'
 anioSelect = d3.select('#anio')
 
@@ -60,39 +58,41 @@ xAxisGroup = g.append('g')
 yAxisGroup = g.append('g')
               .attr('class', 'ejes')
 
-titulo = g.append('text')
-          .attr('x', `${ancho / 2}px`)
-          .attr('y', '-5px')
-          .attr('text-anchor', 'middle')
-          .text('Analisis por banco y ' + metrica + ' en tarjetas de debito')
-          .attr('class', 'titulo-grafica')
-
 dataArray = []
 
 function render(data) {
-
+    console.log("Entro a render")
     if(comboAnios == "todos"){
+        console.log(`Años: ${comboAnios}`)
         bars =  g.selectAll('rect')
-                .data(data)
+                 .data(data)
         // Barras
         bars.enter()
             .append('rect')
-                .style('width', '0px')
-                .style('height', '0px')
-                .style('y', `${y(0)}px`)
-                .style('fill', '#eaeae1')
-                .style('x', d => x(d.solicitudes) + 'px')
-        .transition()
-
-        .duration(1500)
-                .style('y', d => `${(y(d.solicitudes))}px`)
-                .style('height', d => `${alto - y(d.solicitudes)}px`)
+            .style('width', '0px')
+            .style('height', '0px')
+            .style('y', `${y(0)}px`)
+            .style('fill', '#eaeae1')
+            //.style('x', d => x(d.solicitudes) + 'px')
+            .style('x', d => x(d[metrica]) + 'px')
+            .transition()
+            .duration(1500)
+                //.style('y', d => `${(y(d.solicitudes))}px`)
+                .style('y', d => (y(d[metrica])) + 'px')
+                //.style('height', d => `${alto - y(d.solicitudes)}px`)
+                .style('height', d => (alto - y(d[metrica])) + 'px')
                 .style('fill', d => color(d.anio))
                 .style('width', d => `${x.bandwidth()}px`)
-                
+        bars.exit()
+            /*.transition()
+            .duration(1500)
+            .style('height', '0px')
+            .style('y', d => `${y(0)}px`)
+            .style('fill', '#000000') */
+            .remove() 
         // Ejes
         yAxCall = d3.axisLeft(y)
-                    .tickFormat(d => `${d} m`)
+                    .tickFormat(d => d + ((metrica == 'monto') ? ' B' : ' m'))
         yAxisGroup.call(yAxCall) 
         banco.domain(data.map(d => d.banco))
             .range([0, ancho])
@@ -103,11 +103,9 @@ function render(data) {
                 .attr('x', '0')
                 .attr('y', '10')
                 .attr('text-anchor', 'middle')
-
-    }else{    
+    } else {    
         bars = g.selectAll('rect')
                 .data(data, d => d.banco)
-
         bars.enter()
             .append('rect')
             .style('width', '0px')
@@ -117,30 +115,25 @@ function render(data) {
             .style('x', d => x(d.banco) + 'px')
             .merge(bars)
             .transition()
-
-            .duration(2000)
+            .duration(1500)
                 .style('x', d => x(d.banco) + 'px')
                 .style('y', d => (y(d[metrica])) + 'px')
                 .style('height', d => (alto - y(d[metrica])) + 'px')
                 .style('fill', d => color(d.banco))
-                .style('width', d => `${x.bandwidth()}px`)
-    
+                .style('width', d => `${x.bandwidth()}px`)    
         bars.exit()
             .transition()
-            .duration(2000)
+            .duration(1500)
             .style('height', '0px')
             .style('y', d => `${y(0)}px`)
             .style('fill', '#000000')
-            .remove()
-    
-    
+            .remove()    
         yAxisCall = d3.axisLeft(y)
                     .ticks(3)
                     .tickFormat(d => d + ((metrica == 'monto') ? ' B' : ' m'))
         yAxisGroup.transition()
                 .duration(2000)
-                .call(yAxisCall)
-    
+                .call(yAxisCall)    
         xAxisCall = d3.axisBottom(x)
         xAxisGroup.transition()
                 .duration(2000)
@@ -154,55 +147,48 @@ function render(data) {
 
 // Carga de datos - los montos se escalan a miles de millones y el nro de opns a miles
 d3.csv('/data/DatasetTarjetasDebito.csv').then(function (data) {
-    console.log(data)
+    // console.log(data)
     data.forEach(d => {
         d.anio =+ d.anio
-        d.monto =+ d.monto/1000000000
+        d.monto =+ d.monto/1000000
         d.solicitudes =+ d.solicitudes/1000
     })
     this.dataArray = data
 
     anioCombo = data.map(d => d.anio)
     distinctYears = new Set(anioCombo);
-
     anioSelect.append('option')
               .attr('value', 'todos')
               .text('Todos')
-
     distinctYears.forEach(d => {
     anioSelect.append('option')
                 .attr('value', d)
                 .text(d)})
 
-    // V. Despliegue
+    // Despliegue
     frame()
-
 }).catch(e => {
     console.log('No se tuvo acceso al archivo: ' + e.message)
 })
 
 
 function frame() {
-
     dataframe = dataArray
     if (comboAnios != 'todos') {
-      console.log("anios"+comboAnios)
+      console.log(`Un solo año: ${comboAnios}`)
       dataframe = d3.filter(dataArray, d => d.anio == comboAnios)
     }
     
-    // Calculaar la altura más alta dentro de los datos
-    console.log("metrica"+metrica)
-    nroSolsMax = d3.max(dataframe, d => d[metrica])
-    console.log("max"+nroSolsMax)
+    // Calcular la altura más alta dentro de los datos
+    console.log(`Métrica: ${metrica}`)
+    nroMax = d3.max(dataframe, d => d[metrica])
+    console.log(dataframe)
     // Creamos una función para calcular la altura de las barras y que quepan en nuestro canvas
-    y.domain([0, nroSolsMax])
-
-    if(comboAnios == "todos"){
-        x.domain(dataframe.map(d => d.solicitudes))
-    }else{
+    y.domain([0, nroMax])
+    if(comboAnios == "todos")
+        metrica == 'solicitudes' ? x.domain(dataframe.map(d => d.solicitudes)) : x.domain(dataframe.map(d => d.monto))
+    else
         x.domain(dataframe.map(d => d.banco))    
-    }
-  
     render(dataframe)
 }
 
