@@ -72,9 +72,9 @@ dataArray = []
 function render(data) {
     newContent = ""
     bars =  g.selectAll('rect')
-             .data(data)             
+             .data(data)
     startTitulo = (metrica == "monto") ? "Montos " : "Número "
-    if(comboAnios == "todos") { 
+    if(comboAnios == "todos") {       
         // Barras
         bars.enter()
             .append('rect')
@@ -111,9 +111,11 @@ function render(data) {
                 .attr('x', '0')
                 .attr('y', '10')
                 .attr('text-anchor', 'middle')
-        newContent = startTitulo + " de operaciones de tarjetas de débito (2015 - 2020)";        
+        newContent = startTitulo + " de operaciones de tarjetas de débito (2015 - 2020)";
     }
-    else {            
+    else {    
+        //bars = g.selectAll('rect')
+        //        .data(data, d => d.banco)
         bars.enter()
             .append('rect')
             .style('width', '0px')
@@ -154,7 +156,7 @@ function render(data) {
     }
     // Update titulo de grafica
     container.innerHTML = newContent; 
-}
+  }
 
 // Carga de datos - los montos se escalan a miles de millones y el nro de opns a miles
 d3.csv('/data/DatasetTarjetasDebito.csv').then(function (data) {
