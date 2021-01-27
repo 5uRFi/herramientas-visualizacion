@@ -157,7 +157,7 @@ function render(data) {
 }
 
 // Carga de datos - los montos se escalan a miles de millones y el nro de opns a miles
-d3.csv('/data/DatasetTarjetasDebito.csv').then(function (data) {
+d3.csv('data/DatasetTarjetasDebito.csv').then(function (data) {
         data.forEach(d => {        
         d.anio =+ d.anio
         d.monto =+ d.monto/1000000
