@@ -13,8 +13,12 @@
 }
 
 .vizprev {
-    background-color: #eaeae1;
-    border: 1px solid lightslategray;
+    background-color: white;
+    border: 1px solid lightslategray;    
+}
+
+.description {
+    background-color: white;
 }
 
 .ejes {
