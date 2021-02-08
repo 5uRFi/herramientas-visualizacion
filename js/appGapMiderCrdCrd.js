@@ -42,7 +42,7 @@ g.append('rect')
     .attr('fill', 'none')
 
 // -- Escaladores Inicio
-x = d3.scaleLinear().range([0, ancho])
+x = d3.scaleLog().range([0, ancho])
 y = d3.scaleLinear().range([alto, 0])
 color = d3.scaleOrdinal()
 r = d3.scaleLinear()
@@ -55,8 +55,8 @@ trimestresLeyenda = []
 idxTrim = []
 trimCnt = 0
 metricaSelect = d3.select('#metrica')
-metricaListDisplay = ['Monto Promedio por Compra', 'Porcentaje de Compras Autorizadas', 'Monto Promedio de Compras Autorizadas']
-metricaList = ['MTO_PROM_X_SOLC', 'PORC_CPAS_AUT', 'PROM_CPAS_AUT']
+metricaListDisplay = ['Monto Promedio por Compra', 'Monto Promedio de Compras Autorizadas', 'Porcentaje de Compras Autorizadas']
+metricaList = ['MTO_PROM_X_SOLC', 'PROM_CPAS_AUT', 'PORC_CPAS_AUT']
 metrica = 'MTO_PROM_X_SOLC'
 
 d3.csv('/data/OverallCreditCards.csv').then ((data) => {
@@ -126,20 +126,23 @@ function frame () {
     // -- Ajuste del escalador del radio
     console.log(metrica)
     console.log('Mín ' + d3.min(datos, d => d[metrica]))
-    console.log('Max ' + d3.max(datos, d => d[metrica]))
-    r.domain([d3.min(datos, d => d[metrica]), d3.max(datos, d => d[metrica])]) 
+    console.log('Max ' + d3.max(datos, d => d[metrica]))     
+    if (metrica === 'MTO_PROM_X_SOLC' || metrica === 'PROM_CPAS_AUT')
+        r.domain([d3.min(datos, d => d.PROM_CPAS_AUT), d3.max(datos, d => d.MTO_PROM_X_SOLC)])
+    else
+        r.domain([d3.min(datos, d => d.PORC_CPAS_AUT), d3.max(datos, d => d.PORC_CPAS_AUT)])
     switch(metrica) {
         case 'MTO_PROM_X_SOLC':
-            r.range([5, 75])
-            color.range(d3.schemePaired)
+            r.range([5, 70])
+            color.range(["#A93226","#884EA0","#2471A3","#17A589","#229954","#28B463","#D4AC0D","#BA4A00","#717D7E","#2E4053"])
             break;
         case 'PROM_CPAS_AUT':
-            r.range([5, 75])
-            color.range(d3.schemePaired)
+            r.range([5, 70])
+            color.range(["#607D8B","#9E9E9E","#6D4C41","#F4511E","#FFB300","#FDD835","#C0CA33","#43A047","#5E35B1","#E53935"])
             break;
         default:  // 'PORC_CPAS_AUT'
-            r.range([5, 50])
-            color.range(["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"])
+            r.range([5, 35])
+            color.range(["#FFCC00","#FF9900","#FF6600","#990000","#996600","#999900","#99CC00","#33CC00","#336600","#330033"])
       }
     render(data)
 }
@@ -152,6 +155,8 @@ function render (data) {
             .attr('cx', d => x(d.NRO_SOLS_CPA))
             .attr('cy', d => y(d.MTO_SOLS_CPA))
             .attr('r', 0)
+            .on("mouseover", mouseHoverOn)
+            .on("mouseout", mouseHoverOff)
         .merge(p)
             .transition().duration(1000)
             .attr('cx', d => x(d.NRO_SOLS_CPA))
@@ -176,3 +181,67 @@ metricaSelect.on('change', () => {
     metrica = metricaSelect.node().value
     frame()
 })
+
+//Handling mouse hover functionality
+var mouseHoverOn = function() {
+    //change the opacity of background
+                                        p.style("opacity",.2)
+                      var circle = d3.select(this);
+
+    //highlight the hovered circle by changing the opacity
+                                circle.transition()
+                                          .duration(10).style("opacity", 0.9)
+                                circle.append("title")
+                                          .text(function(d) {
+                                            var valMetrica
+                                            if(metrica == 'MTO_PROM_X_SOLC'){
+                                                valMetrica = d.MTO_PROM_X_SOLC
+                                            }else if(metrica == 'PROM_CPAS_AUT'){
+                                                valMetrica = d.PROM_CPAS_AUT
+                                            }else if(metrica == 'PORC_CPAS_AUT'){
+                                                valMetrica = d.PORC_CPAS_AUT
+                                             }
+                                             console.log('valMetrica'+valMetrica)
+                                             console.log('metricaSelect'+metricaSelect.text)
+                                            return metricaSelect.value + ':' + valMetrica + '\n\nNúmero de solicitudes:' + d.NRO_SOLS_CPA + '\nMonto de Solicitudes:' + d.MTO_SOLS_CPA
+                                          })
+
+                                   svg.append("g")
+                                      .attr("class", "detailInfo")
+                                    .append("line")
+                                      .attr("x1", circle.attr("cx") )
+                                      .attr("x2", circle.attr("cx"))
+                                                    .attr("y1", circle.attr("cy"))
+                                                    .attr("y2", alto )
+                                                    .attr("transform", "translate(80,30)")
+                                                    .style("stroke", "black")
+                                                    .transition().delay(200).duration(450).styleTween("opacity",
+                                                    function() {
+                                                        return d3.interpolate(1, .5);
+                                                    })
+
+                                             svg.append("g")
+                                                    .attr("class","detailInfo")
+                                                    .append("line")
+                                                    .attr("y1", circle.attr("cy"))
+                                                    .attr("y2", circle.attr("cy"))
+                                                    .attr("x1", circle.attr("cx"))
+                                      .attr("x2", 0 - margins.left)
+                                                    .attr("transform", "translate(80,30)")
+                                                    .style("stroke", "black")
+                                                    .transition().delay(200).duration(450).styleTween("opacity",
+                                                    function() {
+                                                        return d3.interpolate(1, .5);
+                                                    })
+                                                };
+
+//Remove the opacity effect and make all circle visible
+var mouseHoverOff = function() {
+    p.style("opacity",0.9)
+    var circle = d3.select(this);
+                d3.selectAll(".detailInfo").transition()
+                    .duration(10).styleTween("opacity", function() {
+                return d3.interpolate(.5, 1);
+})
+                    .remove()
+};
