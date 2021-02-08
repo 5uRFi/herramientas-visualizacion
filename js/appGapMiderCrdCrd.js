@@ -42,9 +42,9 @@ g.append('rect')
     .attr('fill', 'none')
 
 // -- Escaladores Inicio
-x = d3.scaleLog().range([0, ancho])
+x = d3.scaleLinear().range([0, ancho])
 y = d3.scaleLinear().range([alto, 0])
-color = d3.scaleOrdinal().range(d3.schemePaired)
+color = d3.scaleOrdinal()
 r = d3.scaleLinear()
 
 // -- Variables globales
@@ -57,7 +57,7 @@ trimCnt = 0
 metricaSelect = d3.select('#metrica')
 metricaListDisplay = ['Monto Promedio por Compra', 'Porcentaje de Compras Autorizadas', 'Monto Promedio de Compras Autorizadas']
 metricaList = ['MTO_PROM_X_SOLC', 'PORC_CPAS_AUT', 'PROM_CPAS_AUT']
-metrica = ''
+metrica = 'MTO_PROM_X_SOLC'
 
 d3.csv('/data/OverallCreditCards.csv').then ((data) => {
     data.forEach((d) => {
@@ -77,17 +77,13 @@ d3.csv('/data/OverallCreditCards.csv').then ((data) => {
     trimestresRepo = Array.from(new Set(d3.map(data, d => d.TRIMESTRE_NUM))).sort()
     trimestresLeyenda = Array.from(new Set(d3.map(data, d => d.TRIMESTRE_LEYENDA))).sort()
     x.domain([d3.min(data, d => d.NRO_SOLS_CPA), d3.max(data, d => d.NRO_SOLS_CPA)])
-    y.domain([d3.min(data, d => d.MTO_SOLS_CPA), d3.max(data, d => d.MTO_SOLS_CPA)])
-    r.domain([d3.min(data, d => d.PORC_CPAS_AUT), d3.max(data, d => d.PORC_CPAS_AUT)])
-    /*// -- Selector de métrica
-    bancoSelec.append('option')
-                .attr('value', 'todos')
-                .text('Todos')
-    color.domain().forEach(d => {
-        bancoSelec.append('option')
-        .attr('value', d)
-        .text(d)
-    })*/
+    y.domain([d3.min(data, d => d.MTO_SOLS_CPA), d3.max(data, d => d.MTO_SOLS_CPA)])    
+    // -- Llenado de la lista de métricas
+    for (let i = 0; i < metricaListDisplay.length; i++) {
+        metricaSelect.append('option')
+                        .attr('value', metricaList[i])
+                        .text(metricaListDisplay[i])
+    }
     // -- Configuración de ejes
     xAxis = d3.axisBottom(x)
                 .ticks(10)
@@ -117,17 +113,34 @@ d3.csv('/data/OverallCreditCards.csv').then ((data) => {
     g.append('g')
         .attr('class', 'ejes')
         .call(yAxisGrid)
-
     // -- Asignación de variable global de datos
     datos = data
     frame()
 })
 
 function frame () {
-    // -- Selecciónde datos del trimeste y leyenda
+    // -- Selección de datos del trimeste y leyenda
     idxTrim = trimestresRepo[trimCnt]
     yrDisplay.text(trimestresLeyenda[trimCnt])
     data = d3.filter(datos, d => d.TRIMESTRE_NUM == idxTrim)
+    // -- Ajuste del escalador del radio
+    console.log(metrica)
+    console.log('Mín ' + d3.min(datos, d => d[metrica]))
+    console.log('Max ' + d3.max(datos, d => d[metrica]))
+    r.domain([d3.min(datos, d => d[metrica]), d3.max(datos, d => d[metrica])]) 
+    switch(metrica) {
+        case 'MTO_PROM_X_SOLC':
+            r.range([5, 75])
+            color.range(d3.schemePaired)
+            break;
+        case 'PROM_CPAS_AUT':
+            r.range([5, 75])
+            color.range(d3.schemePaired)
+            break;
+        default:  // 'PORC_CPAS_AUT'
+            r.range([5, 50])
+            color.range(["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"])
+      }
     render(data)
 }
 
@@ -143,7 +156,7 @@ function render (data) {
             .transition().duration(1000)
             .attr('cx', d => x(d.NRO_SOLS_CPA))
             .attr('cy', d => y(d.MTO_SOLS_CPA))
-            .attr('r', d => r(d.PORC_CPAS_AUT) * 25)
+            .attr('r', d => r(d[metrica]))
             .attr('fill', d => color(d.ENTIDAD))
     p.exit()
         .remove()
