@@ -59,6 +59,7 @@ metricaListDisplay = ['Monto Promedio por Compra', 'Monto Promedio de Compras Au
 metricaList = ['MTO_PROM_X_SOLC', 'PROM_CPAS_AUT', 'PORC_CPAS_AUT']
 metrica = 'MTO_PROM_X_SOLC'
 
+var metricaSelectHtml = document.getElementById("metrica");
 d3.csv('/data/OverallCreditCards.csv').then ((data) => {
     data.forEach((d) => {
         d.POSICION =+ d.POSICION
@@ -148,6 +149,9 @@ function frame () {
 }
 
 function render (data) {
+
+    metricaSelectHtml = document.getElementById("metrica");
+
     p = g.selectAll('circle')
             .data(data, d => d.ENTIDAD)
     p.enter()
@@ -194,16 +198,19 @@ var mouseHoverOn = function() {
                                 circle.append("title")
                                           .text(function(d) {
                                             var valMetrica
+                                            var textMetrica
                                             if(metrica == 'MTO_PROM_X_SOLC'){
                                                 valMetrica = d.MTO_PROM_X_SOLC
+                                                textMetrica = 'Monto Promedio por Compra'
                                             }else if(metrica == 'PROM_CPAS_AUT'){
                                                 valMetrica = d.PROM_CPAS_AUT
+                                                textMetrica = 'Monto Promedio de Compras Autorizadas'
                                             }else if(metrica == 'PORC_CPAS_AUT'){
                                                 valMetrica = d.PORC_CPAS_AUT
-                                             }
-                                             console.log('valMetrica'+valMetrica)
-                                             console.log('metricaSelect'+metricaSelect.text)
-                                            return metricaSelect.value + ':' + valMetrica + '\n\nNúmero de solicitudes:' + d.NRO_SOLS_CPA + '\nMonto de Solicitudes:' + d.MTO_SOLS_CPA
+                                                textMetrica = 'Porcentaje de Compras Autorizadas'
+                                            }
+                                            console.log('metricaSelect'+metrica)
+                                            return textMetrica + ': ' + valMetrica + '\n\nNúmero de solicitudes: ' + d.NRO_SOLS_CPA + '\nMonto de Solicitudes: ' + d.MTO_SOLS_CPA
                                           })
 
                                    svg.append("g")
