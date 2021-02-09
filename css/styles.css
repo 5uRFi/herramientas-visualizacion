@@ -12,6 +12,18 @@
     object-fit: cover;
 }
 
+.subTitHome {
+    font-family: 'Helvetica';
+    font-size: 16px;
+    color: #004080
+}
+
+.txtHome {
+    font-family: 'Helvetica';
+    font-size: 14px;
+    color: #001a33
+}
+
 .vizprev {
     background-color: white;
     border: 1px solid lightslategray;    
