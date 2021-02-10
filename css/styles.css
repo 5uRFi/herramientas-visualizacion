@@ -24,6 +24,19 @@
     color: #001a33
 }
 
+.subTitGM {
+    font-family: 'Helvetica';
+    font-size: 18px;
+    font-weight: bold;
+    color: #669999
+}
+
+.txtGM {
+    font-family: 'Helvetica';
+    font-size: 15px;
+    color: #2e2e1f
+}
+
 .vizprev {
     background-color: white;
     border: 1px solid lightslategray;    

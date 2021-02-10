@@ -7,7 +7,7 @@ alto_total = ancho_total * 0.5625
 graf.style('width', `${ancho_total}px`)
     .style('height',`${alto_total}px`)
 
-margins = {top: 30, left:80, right:15, bottom:120}
+margins = {top: 30, left:80, right:15, bottom:80}
 
 ancho = ancho_total - margins.left - margins.right
 alto  = alto_total - margins.top - margins.bottom
@@ -58,9 +58,12 @@ metricaSelect = d3.select('#metrica')
 metricaListDisplay = ['Monto Promedio por Compra', 'Monto Promedio de Compras Autorizadas', 'Porcentaje de Compras Autorizadas']
 metricaList = ['MTO_PROM_X_SOLC', 'PROM_CPAS_AUT', 'PORC_CPAS_AUT']
 metrica = 'MTO_PROM_X_SOLC'
-
+var corriendo = true
+var interval 
 var metricaSelectHtml = document.getElementById("metrica");
-d3.csv('/data/OverallCreditCards.csv').then ((data) => {
+botonPausa = d3.select('#pauseGraph')
+
+d3.csv('data/OverallCreditCards.csv').then ((data) => {
     data.forEach((d) => {
         d.POSICION =+ d.POSICION
         d.TRIMESTRE_NUM =+ d.TRIMESTRE_NUM
@@ -115,8 +118,10 @@ d3.csv('/data/OverallCreditCards.csv').then ((data) => {
         .attr('class', 'ejes')
         .call(yAxisGrid)
     // -- Asignación de variable global de datos
-    datos = data
+    datos = data    
     frame()
+    // -- Intervalo para refrescar la pantalla automáticamente
+    interval = d3.interval(() => adelante(), 300)
 })
 
 function frame () {
@@ -124,10 +129,7 @@ function frame () {
     idxTrim = trimestresRepo[trimCnt]
     yrDisplay.text(trimestresLeyenda[trimCnt])
     data = d3.filter(datos, d => d.TRIMESTRE_NUM == idxTrim)
-    // -- Ajuste del escalador del radio
-    console.log(metrica)
-    console.log('Mín ' + d3.min(datos, d => d[metrica]))
-    console.log('Max ' + d3.max(datos, d => d[metrica]))     
+    // -- Ajuste del escalador del radio   
     if (metrica === 'MTO_PROM_X_SOLC' || metrica === 'PROM_CPAS_AUT')
         r.domain([d3.min(datos, d => d.PROM_CPAS_AUT), d3.max(datos, d => d.MTO_PROM_X_SOLC)])
     else
@@ -155,6 +157,7 @@ function render (data) {
     p = g.selectAll('circle')
             .data(data, d => d.ENTIDAD)
     p.enter()
+            //.transition().duration(1000)
             .append('circle') 
             .attr('cx', d => x(d.NRO_SOLS_CPA))
             .attr('cy', d => y(d.MTO_SOLS_CPA))
@@ -181,6 +184,20 @@ function adelante() {
     frame()
 }
 
+botonPausa.on('click', () => {
+    corriendo = !corriendo    
+    if (corriendo) {
+        image = document.getElementById('pauseGraph')
+        image.src = 'img/small_1x_pause.png'
+        interval = d3.interval(() => adelante(), 300)
+    } else {
+        image = document.getElementById('pauseGraph')
+        image.src = 'img/small_1x_play.png'
+        interval.stop()
+    }
+})
+
+
 metricaSelect.on('change', () => {
     metrica = metricaSelect.node().value
     frame()
@@ -189,66 +206,65 @@ metricaSelect.on('change', () => {
 //Handling mouse hover functionality
 var mouseHoverOn = function() {
     //change the opacity of background
-                                        p.style("opacity",.2)
-                      var circle = d3.select(this);
+    p.style("opacity",.2)
+    var circle = d3.select(this);
 
     //highlight the hovered circle by changing the opacity
-                                circle.transition()
-                                          .duration(10).style("opacity", 0.9)
-                                circle.append("title")
-                                          .text(function(d) {
-                                            var valMetrica
-                                            var textMetrica
-                                            if(metrica == 'MTO_PROM_X_SOLC'){
-                                                valMetrica = d.MTO_PROM_X_SOLC
-                                                textMetrica = 'Monto Promedio por Compra'
-                                            }else if(metrica == 'PROM_CPAS_AUT'){
-                                                valMetrica = d.PROM_CPAS_AUT
-                                                textMetrica = 'Monto Promedio de Compras Autorizadas'
-                                            }else if(metrica == 'PORC_CPAS_AUT'){
-                                                valMetrica = d.PORC_CPAS_AUT
-                                                textMetrica = 'Porcentaje de Compras Autorizadas'
-                                            }
-                                            console.log('metricaSelect'+metrica)
-                                            return textMetrica + ': ' + valMetrica + '\n\nNúmero de solicitudes: ' + d.NRO_SOLS_CPA + '\nMonto de Solicitudes: ' + d.MTO_SOLS_CPA
-                                          })
+    circle.transition()
+            .duration(10).style("opacity", 0.9)
+    circle.append("title")
+            .text(function(d) {
+            var valMetrica
+            var textMetrica
+            if(metrica == 'MTO_PROM_X_SOLC'){
+                valMetrica = d.MTO_PROM_X_SOLC
+                textMetrica = 'Monto Promedio por Compra'
+            } else if(metrica == 'PROM_CPAS_AUT'){
+                valMetrica = d.PROM_CPAS_AUT
+                textMetrica = 'Monto Promedio de Compras Autorizadas'
+            } else if(metrica == 'PORC_CPAS_AUT'){
+                valMetrica = d.PORC_CPAS_AUT
+                textMetrica = 'Porcentaje de Compras Autorizadas'
+            }
+            console.log('metricaSelect'+metrica)
+            return textMetrica + ': ' + valMetrica + '\n\nNúmero de solicitudes: ' + d.NRO_SOLS_CPA + '\nMonto de Solicitudes: ' + d.MTO_SOLS_CPA
+        })
 
-                                   svg.append("g")
-                                      .attr("class", "detailInfo")
-                                    .append("line")
-                                      .attr("x1", circle.attr("cx") )
-                                      .attr("x2", circle.attr("cx"))
-                                                    .attr("y1", circle.attr("cy"))
-                                                    .attr("y2", alto )
-                                                    .attr("transform", "translate(80,30)")
-                                                    .style("stroke", "black")
-                                                    .transition().delay(200).duration(450).styleTween("opacity",
-                                                    function() {
-                                                        return d3.interpolate(1, .5);
-                                                    })
-
-                                             svg.append("g")
-                                                    .attr("class","detailInfo")
-                                                    .append("line")
-                                                    .attr("y1", circle.attr("cy"))
-                                                    .attr("y2", circle.attr("cy"))
-                                                    .attr("x1", circle.attr("cx"))
-                                      .attr("x2", 0 - margins.left)
-                                                    .attr("transform", "translate(80,30)")
-                                                    .style("stroke", "black")
-                                                    .transition().delay(200).duration(450).styleTween("opacity",
-                                                    function() {
-                                                        return d3.interpolate(1, .5);
-                                                    })
-                                                };
+        svg.append("g")
+            .attr("class", "detailInfo")
+            .append("line")
+            .attr("x1", circle.attr("cx") )
+            .attr("x2", circle.attr("cx"))
+            .attr("y1", circle.attr("cy"))
+            .attr("y2", alto )
+            .attr("transform", "translate(80,30)")
+            .style("stroke", "black")
+            .transition().delay(200).duration(450).styleTween("opacity",
+                                                                function() {
+                                                                    return d3.interpolate(1, .5);
+                                                                })
+        svg.append("g")
+            .attr("class","detailInfo")
+            .append("line")
+            .attr("y1", circle.attr("cy"))
+            .attr("y2", circle.attr("cy"))
+            .attr("x1", circle.attr("cx"))
+            .attr("x2", 0 - margins.left)
+            .attr("transform", "translate(80,30)")
+            .style("stroke", "black")
+            .transition().delay(200).duration(450).styleTween("opacity",
+                                                            function() {
+                                                                return d3.interpolate(1, .5);
+                                                            })
+}
 
 //Remove the opacity effect and make all circle visible
 var mouseHoverOff = function() {
     p.style("opacity",0.9)
     var circle = d3.select(this);
-                d3.selectAll(".detailInfo").transition()
+    d3.selectAll(".detailInfo").transition()
                     .duration(10).styleTween("opacity", function() {
-                return d3.interpolate(.5, 1);
-})
-                    .remove()
-};
+                        return d3.interpolate(.5, 1);
+                    })
+    .remove()
+}
