@@ -154,6 +154,8 @@ function render (data) {
 
     metricaSelectHtml = document.getElementById("metrica");
 
+    renderLabels()
+
     p = g.selectAll('circle')
             .data(data, d => d.ENTIDAD)
     p.enter()
@@ -172,6 +174,32 @@ function render (data) {
             .attr('fill', d => color(d.ENTIDAD))
     p.exit()
         .remove()
+}
+
+//agrega cuadro con descripción a etiquetas
+function renderLabels(){
+    g.append('rect')
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('width', 160)
+    .attr('height', 350)
+    .attr('stroke', 'black')
+    .attr('fill', '#dedede')
+
+    color.domain().forEach((d, i) => {
+        g.append('rect')
+        .attr('x', 10)
+        .attr('y', 5 + i*35)
+        .attr('width', 20)
+        .attr('height', 20)
+        .attr('fill', color(d))
+
+        g.append('text')
+        .attr('x', 40)
+        .attr('y', 20+ i*35)
+        .attr('fill', 'black')
+        .text(d[0].toUpperCase() + d.slice(1))
+    })
 }
 
 function atras() {    
@@ -249,7 +277,7 @@ var mouseHoverOn = function() {
             .attr("y1", circle.attr("cy"))
             .attr("y2", circle.attr("cy"))
             .attr("x1", circle.attr("cx"))
-            .attr("x2", 0 - margins.left)
+            .attr("x2", 0)
             .attr("transform", "translate(80,30)")
             .style("stroke", "black")
             .transition().delay(200).duration(450).styleTween("opacity",
