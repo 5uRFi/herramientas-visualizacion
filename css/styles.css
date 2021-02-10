@@ -60,4 +60,9 @@
     stroke: #ebebe0;
     stroke-width: 1px;
   }
+
+ .slider {
+    width: 100%;
+    vertical-align: middle;
+}
   

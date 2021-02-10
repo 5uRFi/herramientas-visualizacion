@@ -18,7 +18,7 @@
     <div class="container mt-4">
         
       <div class="row mb-2">
-        <div class="col-md-10">              
+        <div class="col-md-12">              
           <div id="description" class="description text-justify">
             <p class="subTitGM ">Operaciones con Tarjetas de Crédito</p>
             <p class="txtGM"> De acuerdo con la CONDUSEF (Cifras relevantes de Banco de México en comercio electrónico), de enero a 
@@ -31,18 +31,24 @@
       </div>
       
       <div class="row mb-2">
+          <!-- Botones -->
           <div class="col-md-2">
             <input type="image" id="backTrim" alt="Previo" src="img/small_1x_rewind.png" onclick="atras()">
             <input type="image" id="pauseGraph" alt="Pausa" src="img/small_1x_pause.png">
             <input type="image" id="frwdTrim" alt="Siguiente" src="img/small_1x_fast_forward.png" onclick="adelante()">
           </div>
-          <div class="col-md-4">Columna 2</div>
-          <div class="col-md-3">Métrica: 
+          <!-- Slider -->
+          <div class="col-md-4">
+            <input type ="range" id = "slider" min = "0" max = "100" value = "50" class="slider">
+            <br><span class="badge badge-success p-2" id="sliderV"></span>
+          </div>
+          <!-- Métrica -->
+          <div class="col-md-4">Métrica: 
             <select id="metrica" class="form-control"></select>
           </div>
       </div>
         <div class="row mb-2">
-            <div class="col-md-10" align-items="center">              
+            <div class="col-md-12" align-items="center">              
               <div id="graf" class="vizprev"></div>            
             </div>
         </div>   

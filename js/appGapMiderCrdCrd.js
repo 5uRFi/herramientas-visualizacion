@@ -62,6 +62,7 @@ var corriendo = true
 var interval 
 var metricaSelectHtml = document.getElementById("metrica");
 botonPausa = d3.select('#pauseGraph')
+slider = d3.select('#slider')
 
 d3.csv('data/OverallCreditCards.csv').then ((data) => {
     data.forEach((d) => {
@@ -88,6 +89,10 @@ d3.csv('data/OverallCreditCards.csv').then ((data) => {
                         .attr('value', metricaList[i])
                         .text(metricaListDisplay[i])
     }
+    // -- Configuración del slider 
+    slider.attr('min', 0)
+            .attr('max', trimestresRepo.length - 1) 
+    slider.node.value = 0
     // -- Configuración de ejes
     xAxis = d3.axisBottom(x)
                 .ticks(10)
@@ -147,6 +152,7 @@ function frame () {
             r.range([5, 35])
             color.range(["#FFCC00","#FF9900","#FF6600","#990000","#996600","#999900","#99CC00","#33CC00","#336600","#330033"])
       }
+    slider.node().value = trimCnt      
     render(data)
 }
 
@@ -176,28 +182,31 @@ function render (data) {
         .remove()
 }
 
-//agrega cuadro con descripción a etiquetas
+// -- Agrega cuadro con descripción a etiquetas
 function renderLabels(){
-    g.append('rect')
+    /* g.append('rect')
     .attr('x', 0)
     .attr('y', 0)
     .attr('width', 160)
     .attr('height', 350)
-    .attr('stroke', 'black')
-    .attr('fill', '#dedede')
+    .attr('stroke', '#808080')
+    .attr('fill', '#e6e6e6') */
 
     color.domain().forEach((d, i) => {
         g.append('rect')
         .attr('x', 10)
-        .attr('y', 5 + i*35)
-        .attr('width', 20)
-        .attr('height', 20)
+        .attr('y', 5 + (i*20)+ 4)
+        .attr('width', 12)
+        .attr('height', 12)
         .attr('fill', color(d))
 
         g.append('text')
         .attr('x', 40)
-        .attr('y', 20+ i*35)
-        .attr('fill', 'black')
+        .attr('y', 20+ i*20)
+        .attr('text-anchor', 'start')
+        .attr("font-family", "sans-serif")
+        .style("font-size", 12)        
+        .attr('fill', 'grey')
         .text(d[0].toUpperCase() + d.slice(1))
     })
 }
@@ -225,19 +234,18 @@ botonPausa.on('click', () => {
     }
 })
 
-
 metricaSelect.on('change', () => {
     metrica = metricaSelect.node().value
     frame()
 })
 
-//Handling mouse hover functionality
+// -- Handling mouse hover functionality
 var mouseHoverOn = function() {
-    //change the opacity of background
+    // -- Change the opacity of background
     p.style("opacity",.2)
     var circle = d3.select(this);
 
-    //highlight the hovered circle by changing the opacity
+    // -- Highlight the hovered circle by changing the opacity
     circle.transition()
             .duration(10).style("opacity", 0.9)
     circle.append("title")
@@ -286,7 +294,7 @@ var mouseHoverOn = function() {
                                                             })
 }
 
-//Remove the opacity effect and make all circle visible
+// -- Remove the opacity effect and make all circle visible
 var mouseHoverOff = function() {
     p.style("opacity",0.9)
     var circle = d3.select(this);
@@ -296,3 +304,17 @@ var mouseHoverOff = function() {
                     })
     .remove()
 }
+
+slider.on('input', () => {
+    // d3.select('#sliderv').text(slider.node().value)
+    trimCnt = +slider.node().value
+    frame()
+})
+
+slider.on('mousedown', () => {
+    if (corriendo) interval.stop()
+  })
+  
+  slider.on('mouseup', () => {
+    if (corriendo) interval = d3.interval(() => adelante(), 300)
+  })
