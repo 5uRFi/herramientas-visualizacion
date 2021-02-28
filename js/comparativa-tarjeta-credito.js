@@ -30,7 +30,7 @@ svg.append("rect")
         .attr("height", alto)
         .on("mouseover", function() { focus.style("display", null); })
         .on("mouseout", function() { focus.style("display", "none"); })
-        .on("mousemove", e => mousemove(e))
+        //.on("mousemove", e => mousemove(e))
 
 focus = g.append("g")
         .attr("class", "focus")
@@ -58,9 +58,14 @@ focus.append("text")
 // Escaladores
 x = d3.scaleTime().range([0, ancho])
 y = d3.scaleLinear().range([alto, 0])
+// -- Escaladores Continuación
+
 color = d3.scaleOrdinal()
-          //.domain(['amzn', 'tsla', 'nflx'])
-          .range(['#bb0000', '#00bb00', '#0000bb'])
+          .domain(['Scotiabank', 'HSBC', 'Banamex', 'Total'])
+          .range(['#bb0000', '#00bb00', '#0000bb', '#95a5a6'])
+
+          //color = d3.scaleOrdinal()
+          //.range(d3.schemeDark2)
 
 // Ejes
 xAxisCall = d3.axisBottom()
@@ -73,11 +78,12 @@ yAxis = g.append('g')
 
 // Generador de líneas
 lineaGen = d3.line()
-              .x(d => x(d.Date))
-              .y(d => y(d.Close))
+              //.x(d => x(d.Trimestre))
+              //.y(d => y(d[entidadFinanciera]))
 linea = g.append('path')
 
 var data
+var entidadFinanciera = "Total"
 
 // parser para fechas
 //
@@ -86,7 +92,7 @@ var data
 //
 // Documentación de la librería de D3:
 // https://github.com/d3/d3-time-format
-parser = d3.timeParse(d3.timeParse('%Y-%m-%d'))
+parser = d3.timeParse(d3.timeParse('%d/%m/%Y'))
 
 /* SE USO EN EL GAP MAINDER EXTRACT CSV
 // Carga de datos - los montos se escalan a miles de millones y el nro de opns a miles
@@ -118,23 +124,36 @@ console.log('No se tuvo acceso al archivo: ' + e.message)
 })
 */
 
-function load() {
+function load(symbol='Total') {
   d3.csv('data/MxOverallCards.csv').then(data => {
     data.forEach(d => {
-      d.Close = +d.Close
-      d.Date = parser(d.Date)
-    })
-    console.log(data)
+      d.Trimestre = + parser(d.Trimestre)
+      d.Banamex = + d.Banamex
+      d.Scotiabank = + d.Scotiabank
+      d.Total = + d.Total
 
-    x.domain(d3.extent(data, d => d.Date))
+      //Trimestre,Banamex,BBVABancomer,HSBC,BancodelBajio,BancaMifel,Scotiabank,Banregio,Invex,Afirme,Banorte-Ixe,American Express,Banco Azteca,BancoAhorro Famsa,Actinver,BanCoppel,Consubanco,Globalcard,TarjetasBanamex,SantanderConsumo,CFCreditServices,Total
+      //d.indice = +d.indice
+      //d.banco = +d.banco
+      //d.valor = +d.valor
+      //d.trimestre = parser(d.trimestre)
+
+      //Trimestre,Banamex,BBVA Bancomer,HSBC,Banco del Bajio,Banca Mifel,Scotiabank,Banregio,Invex,Afirme,Banorte-Ixe,American Express,Banco Azteca,Banco Ahorro Famsa,Actinver,BanCoppel,Consubanco,Globalcard,Tarjetas Banamex,Santander Consumo,CF Credit Services,Total
+    })
+    console.log(entidadFinanciera)
+    // -- Escaladores Continuación
+    //color.domain(d3.map(data, d => d.banco))
+
+
+    x.domain(d3.extent(data, d => d.Trimestre))
     // Esto es equivalente a...
     // x.domain([d3.min(data, d => d.Date),
     //           d3.max(data, d => d.Date)])
 
     // y.domain(d3.extent(data, d => d.Close))
     y.domain([
-      d3.min(data, d => d.Close) * 0.95,
-      d3.max(data, d => d.Close) * 1.05
+      d3.min(data, d => d[entidadFinanciera]) * 0.95,
+      d3.max(data, d => d[entidadFinanciera]) * 1.05
     ])
 
     // Ejes
@@ -148,7 +167,9 @@ function load() {
     this.data = data
 
     render(data, symbol)
-  })
+  }).catch (e => {
+    console.log('No se tuvo acceso al archivo: ' + e.message)
+    })
 }
 
 function render(data, symbol) {
@@ -158,12 +179,18 @@ function render(data, symbol) {
         .duration(500)
         .attr('stroke', color(symbol))
         .attr('d', lineaGen(data))
+
+  lineaGen.x(d => x(d.Trimestre)).y(d => y(d[entidadFinanciera]))
+
+        console.log(lineaGen)
 }
 
-load()
+load(entidadFinanciera)
 
 function cambio() {
-  load(d3.select('#stock').node().value)
+  entidadFinanciera = d3.select('#stock').node().value
+  load(entidadFinanciera)
+  console.log(entidadFinanciera)
 }
 
 
@@ -174,18 +201,17 @@ function mousemove(e) {
 
   x0 = x.invert(d3.pointer(e)[0])
 
-  bisectDate = d3.bisector((d) => d.Date).left
+  bisectDate = d3.bisector((d) => d.Trimestre).left
   i = bisectDate(data, x0, 1)
   console.log(`${x0} = ${i}`)
 
   d0 = data[i - 1],
   d1 = data[i],
-  d = x0 - d0.Date > d1.Date - x0 ? d1 : d0;
+  d = x0 - d0.Trimestre > d1.Trimestre - x0 ? d1 : d0;
 
-    /*
-  focus.attr("transform", "translate(" + x(d.Date) + "," + y(d.Close) + ")");
-  focus.select("text").text(function() { return d.Close; });
-  focus.select(".x-hover-line").attr("x2", -x(d.Date))
-  focus.select(".y-hover-line").attr("y2", alto - y(d.Close))
-  */
+  focus.attr("transform", "translate(" + x(d.Trimestre) + "," + y(d[entidadFinanciera]) + ")");
+  focus.select("text").text(function() { return d[entidadFinanciera]; });
+  focus.select(".x-hover-line").attr("x2", -x(d.Trimestre))
+  focus.select(".y-hover-line").attr("y2", alto - y(d[entidadFinanciera]))
+  
 }

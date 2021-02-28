@@ -22,6 +22,15 @@
       <!-- select -->
       <!-- Métrica -->
       <div class="col-md-4">Entidad financiera: 
+        <div class="col-md-6">
+          <select onchange="cambio()" id="stock" class="form-control">
+            <option value="Total">Total</option>
+            <option value="Banamex">Banamex</option>
+            <option value="HSBC">HSBC</option>
+            <option value="Scotiabank">Scotiabank</option>
+          </select>
+        </div>
+        <!-- Métrica
         <div class="form-check">
             <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
             <label class="form-check-label" for="defaultCheck1">
@@ -34,6 +43,7 @@
                 Banco 2
             </label>
           </div>
+           -->
       </div>
       <!-- /select -->
 
@@ -60,13 +70,9 @@
 
   </div>
 
-  <script src="js/d3.js"></script>
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-
-  <script src="stock.js"></script>
-
-  <script src="https://kit.fontawesome.com/f0abc9c17c.js" crossorigin="anonymous"></script>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="js/comparativa-tarjeta-credito.js"></script>
 </body>
 </html>
