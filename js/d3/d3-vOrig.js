@@ -1,11 +1,11 @@
-// https://d3js.org v6.2.0 Copyright 2020 Mike Bostock
+// https://d3js.org v6.4.0 Copyright 2021 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
 (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.d3 = global.d3 || {}));
 }(this, (function (exports) { 'use strict';
 
-var version = "6.2.0";
+var version = "6.4.0";
 
 function ascending(a, b) {
   return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
@@ -268,6 +268,68 @@ function fsum(values, valueof) {
   return +adder;
 }
 
+class InternMap extends Map {
+  constructor(entries = [], key = keyof) {
+    super();
+    Object.defineProperties(this, {_intern: {value: new Map()}, _key: {value: key}});
+    for (const [key, value] of entries) this.set(key, value);
+  }
+  get(key) {
+    return super.get(intern_get(this, key));
+  }
+  has(key) {
+    return super.has(intern_get(this, key));
+  }
+  set(key, value) {
+    return super.set(intern_set(this, key), value);
+  }
+  delete(key) {
+    return super.delete(intern_delete(this, key));
+  }
+}
+
+class InternSet extends Set {
+  constructor(values = [], key = keyof) {
+    super();
+    Object.defineProperties(this, {_intern: {value: new Map()}, _key: {value: key}});
+    for (const value of values) this.add(value);
+  }
+  has(value) {
+    return super.has(intern_get(this, value));
+  }
+  add(value) {
+    return super.add(intern_set(this, value));
+  }
+  delete(value) {
+    return super.delete(intern_delete(this, value));
+  }
+}
+
+function intern_get({_intern, _key}, value) {
+  const key = _key(value);
+  return _intern.has(key) ? _intern.get(key) : value;
+}
+
+function intern_set({_intern, _key}, value) {
+  const key = _key(value);
+  if (_intern.has(key)) return _intern.get(key);
+  _intern.set(key, value);
+  return value;
+}
+
+function intern_delete({_intern, _key}, value) {
+  const key = _key(value);
+  if (_intern.has(key)) {
+    value = _intern.get(value);
+    _intern.delete(key);
+  }
+  return value;
+}
+
+function keyof(value) {
+  return value !== null && typeof value === "object" ? value.valueOf() : value;
+}
+
 function identity(x) {
   return x;
 }
@@ -304,7 +366,7 @@ function unique(values) {
 function nest(values, map, reduce, keys) {
   return (function regroup(values, i) {
     if (i >= keys.length) return reduce(values);
-    const groups = new Map();
+    const groups = new InternMap();
     const keyof = keys[i++];
     let index = -1;
     for (const value of values) {
@@ -426,13 +488,34 @@ function bin() {
         x1 = xz[1],
         tz = threshold(values, x0, x1);
 
-    // Convert number of thresholds into uniform thresholds,
-    // and nice the default domain accordingly.
+    // Convert number of thresholds into uniform thresholds, and nice the
+    // default domain accordingly.
     if (!Array.isArray(tz)) {
-      tz = +tz;
-      if (domain === extent) [x0, x1] = nice(x0, x1, tz);
-      tz = ticks(x0, x1, tz);
-      if (tz[tz.length - 1] === x1) tz.pop(); // exclusive
+      const max = x1, tn = +tz;
+      if (domain === extent) [x0, x1] = nice(x0, x1, tn);
+      tz = ticks(x0, x1, tn);
+
+      // If the last threshold is coincident with the domain’s upper bound, the
+      // last bin will be zero-width. If the default domain is used, and this
+      // last threshold is coincident with the maximum input value, we can
+      // extend the niced upper bound by one tick to ensure uniform bin widths;
+      // otherwise, we simply remove the last threshold. Note that we don’t
+      // coerce values or the domain to numbers, and thus must be careful to
+      // compare order (>=) rather than strict equality (===)!
+      if (tz[tz.length - 1] >= x1) {
+        if (max >= x1 && domain === extent) {
+          const step = tickIncrement(x0, x1, tn);
+          if (isFinite(step)) {
+            if (step > 0) {
+              x1 = (Math.floor(x1 / step) + 1) * step;
+            } else if (step < 0) {
+              x1 = (Math.ceil(x1 * -step) + 1) / -step;
+            }
+          }
+        } else {
+          tz.pop();
+        }
+      }
     }
 
     // Remove any thresholds outside the domain.
@@ -914,9 +997,14 @@ function reverse(values) {
   return Array.from(values).reverse();
 }
 
-function sort(values, comparator = ascending) {
+function sort(values, f = ascending) {
   if (typeof values[Symbol.iterator] !== "function") throw new TypeError("values is not iterable");
-  return Array.from(values).sort(comparator);
+  values = Array.from(values);
+  if (f.length === 1) {
+    f = values.map(f);
+    return permute(values, values.map((d, i) => i).sort((i, j) => ascending(f[i], f[j])));
+  }
+  return values.sort(f);
 }
 
 function difference(values, ...others) {
@@ -19001,6 +19089,8 @@ function zoom() {
 exports.Adder = Adder;
 exports.Delaunay = Delaunay;
 exports.FormatSpecifier = FormatSpecifier;
+exports.InternMap = InternMap;
+exports.InternSet = InternSet;
 exports.Voronoi = Voronoi;
 exports.active = active;
 exports.arc = arc;

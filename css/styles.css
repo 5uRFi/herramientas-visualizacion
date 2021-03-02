@@ -39,7 +39,8 @@
 
 .vizprev {
     background-color: white;
-    border: 1px solid lightslategray;    
+    border: none;    
+    /*border: 1px solid lightslategray;    */
 }
 
 .description {
@@ -65,4 +66,42 @@
     width: 100%;
     vertical-align: middle;
 }
-  
+
+
+
+
+    .overlay {
+        fill: none;
+        pointer-events: all;
+    }
+
+    .hover-line {
+        stroke: #6F257F;
+        stroke-width: 2px;
+        stroke-dasharray: 3,3;
+    }
+
+    .tooltip {
+        width: 94px;
+        padding: 4px 10px;
+        border: 1px solid rgb(28, 148, 34);
+        border-radius: 4px;
+        box-shadow: 2px 2px 4px rgba(202, 18, 18, 0.3);
+        position: absolute;
+        background-color: #004080;
+        font-size: 14px;
+        pointer-events: none;
+        -webkit-transition: all 0.25s;
+        -moz-transition: all 0.25s;
+        -ms-transition: all 0.25s;
+        -o-transition: all 0.25s;
+        transition: all 0.25s;
+}
+
+.tooltip div {
+    margin: 3px 0;
+}
+
+.tooltip-date, .tooltip-likes {
+    font-weight: bold;
+}

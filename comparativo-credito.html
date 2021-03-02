@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device width, initial-scale=1.0">
+    <title>Portafolio de proyectos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <nav class="d-flex justify-content-between navbar navbar-light bg-light shadow">
+    <a href="index.html">
+        <img src="https://www.unir.net/wp-content/uploads/2020/03/logo-horizontal-1536x925.png" class="logoUNIR">
+    </a>
+    <p>Herramientas de Visualización</p>
+</nav>
+
+
+  <div class="container-fluid mt-4">
+
+    <div class="row mb-4">
+      <!-- select -->
+      <div class="col-md-4">Entidad financiera: 
+        <div class="col-md-6">
+          <select id="selector" class="form-control">
+            <option value="todos">Todos</option>
+            <option selected value="banco">Por banco</option>
+          </select>
+        </div>
+      </div>
+      <!-- /select -->
+
+    </div>
+
+    <!-- grafica -->
+    <div class="row mb-2" id="banco">
+      <div class="col-md-12">
+        <div id="" class="">
+          <iframe class="" width="1280" height="1024" src="comparativa-tarjeta-credito.html"></iframe>
+        </div>
+      </div>
+    </div>
+    <!-- /grafica -->
+
+    <!-- grafica -->
+    <div class="row mb-2" id="todos">
+      <div class="col-md-12" style="visibility: hidden;">
+        <div id="" class="">
+          <iframe src="multiline.html" width="1280" height="1024" style="border: none;"></iframe>
+        </div>
+      </div>
+    </div>
+    <!-- /grafica -->
+
+    <div class="row">
+      <div class="col-md-10 class=description text-justify">
+        <h4>Tendencia del número de tarjetas de crédito activas en México</h4>
+        <p>La incertidumbre causada por la pandemia de COVID19 provocó que entre marzo (con la Jornada Nacional de Sana Distancia) y septiembre se registraran bajas/cancelaciones de tarjetas de crédito.   Sin embargo, de enero a septiembre de 2020 el monto de las solicitudes de compra con tarjetas de crédito aumentó 10 por ciento desde los 59 mil 953 millones de pesos de 2019 a más de 66 mil 167 millones.  
+          La emergencia sanitaria benefició el uso de tarjetas de crédito y débito, pues con ella vino el confinamiento y el cierre de tiendas físicas para disminuir los contagios. Esto trasladó millones de compras al comercio electrónico.   Este mismo patrón se repite en Latinoamérica – particularmente en Argentina y Colombia.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="js/comparativo-credito.js"></script>
+</body>
+</html>

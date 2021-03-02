@@ -21,7 +21,16 @@ g = svg.append('g')
         .attr('width', ancho + 'px')
         .attr('height', alto + 'px')
 
-
+svg.append("rect")
+        .attr("transform", "translate(" + margins.left + "," + margins.top + ")")
+        // .attr("class", "overlay")
+        .attr('fill', 'black')
+        .attr('fill-opacity', 0.25)
+        .attr("width", ancho)
+        .attr("height", alto)
+        .on("mouseover", function() { focus.style("display", null); })
+        .on("mouseout", function() { focus.style("display", "none"); })
+        .on("mousemove", e => mousemove(e))
 
 focus = g.append("g")
         .attr("class", "focus")
@@ -38,37 +47,6 @@ focus.append("circle")
 focus.append("text")
         .attr("x", 15)
       	.attr("dy", ".31em");
-
-//load tooltip
-var tooltip = svg.append("div")
-.attr("class", "tooltip")
-.style("display", "none");
-
-var tooltipDate = tooltip.append("div")
-.attr("class", "tooltip-date");
-
-var tooltipLikes = tooltip.append("div");
-tooltipLikes.append("span")
-.attr("class", "tooltip-title")
-.text("Likes: ");
-
-var tooltipLikesValue = tooltipLikes.append("span")
-.attr("class", "tooltip-likes");
-
-
-svg.append("rect")
-        .attr("transform", "translate(" + margins.left + "," + margins.top + ")")
-        // .attr("class", "overlay")
-        .attr('fill', 'black')
-        .attr('fill-opacity', 0.25)
-        .attr("width", ancho)
-        .attr("height", alto)
-        //on("mouseover", function() { focus.style("display", null); })
-        //.on("mouseout", function() { focus.style("display", "none"); })
-        .on("mouseover", function() { focus.style("display", null); tooltip.style("display", null);  })
-        .on("mouseout", function() { focus.style("display", "none"); tooltip.style("display", "none"); })
-        .on("mousemove", e => mousemove(e))
-
 
 // Variables Global_Objects
 var entidadFinanciera = "TarjetasBanamex"
@@ -98,7 +76,6 @@ linea = g.append('path')
 var data
 
 parser = d3.timeParse(d3.timeParse('%Y-%m-%d'))
-var bisectDate = d3.bisector((d) => d.Trimestre).left
 
 function load() {
   d3.csv('data/MxOverallNumCards.csv').then(data => {
@@ -128,21 +105,15 @@ function load() {
   }).catch (e => {
     console.log('No se tuvo acceso al archivo: ' + e.message)
     })
-
-    
 }
 
 function render(data) {
-
-
     linea.attr('fill', 'none')
         .attr('stroke-width', 3)
         .transition()
         .duration(500)
         .attr('stroke', color(entidadFinanciera))
         .attr('d', lineaGen(data))
-
-        
 }
 
 load(entidadFinanciera)
@@ -160,33 +131,17 @@ function mousemove(e) {
         // https://stackoverflow.com/questions/26882631/d3-what-is-a-bisector
 
         x0 = x.invert(d3.pointer(e)[0])
-        //bisectDate = d3.bisector((d) => d.Trimestre).left
+
+        bisectDate = d3.bisector((d) => d.Trimestre).left
         i = bisectDate(data, x0, 1)
-        //console.log(`${x0} = ${i}`)
+        console.log(`${x0} = ${i}`)
 
         d0 = data[i - 1],
         d1 = data[i],
         d = x0 - d0.Trimestre > d1.Trimestre - x0 ? d1 : d0;
 
-        console.log("style", "left:" + (x(d.Trimestre) + 64) + "px;top:" + y(d[entidadFinanciera]) + "px;")
         focus.attr("transform", "translate(" + x(d.Trimestre) + "," + y(d[entidadFinanciera]) + ")");
         focus.select("text").text(function() { return d[entidadFinanciera]; });
-        focus.select(".x-hover-line").attr("x2", -x(d.Trimestre));
-        focus.select(".y-hover-line").attr("y2", alto - y(d[entidadFinanciera]));
-        tooltip.attr("style", "left:" + (x(d.Trimestre) + 64) + "px;top:" + y(d[entidadFinanciera]) + "px;");;
-        tooltip.select(".tooltip-date").text((d.Trimestre));
-        tooltip.select(".tooltip-likes").text(d[entidadFinanciera]);
+        focus.select(".x-hover-line").attr("x2", -x(d.Trimestre))
+        focus.select(".y-hover-line").attr("y2", alto - y(d[entidadFinanciera]))
       }
-/*
-      function mousemove() {
-        var x0 = x.invert(d3.pointer(this)[0]),
-            i = bisectDate(data, x0, 1),
-            d0 = data[i - 1],
-            d1 = data[i],
-            d = x0 - d0.Trimestre > d1.Trimestre - x0 ? d1 : d0;
-        focus.attr("transform", "translate(" + x(d.Trimestre) + "," + y(d[entidadFinanciera]) + ")");
-        tooltip.attr("style", "left:" + (x(d.Trimestre) + 64) + "px;top:" + y(d[entidadFinanciera]) + "px;");
-        
-        tooltip.select(".tooltip-date").text((d.Trimestre));
-        tooltip.select(".tooltip-likes").text(d[entidadFinanciera]);
-    }*/
