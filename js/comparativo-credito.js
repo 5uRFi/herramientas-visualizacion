@@ -1,3 +1,5 @@
+$('#todos').attr("disabled", true);     
+
 $("#selector").on("change", () => {
     var select = $("#selector").val()
     console.log(select)
