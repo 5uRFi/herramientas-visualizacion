@@ -194,7 +194,7 @@ function mousemove(e) {
         d = x0 - d0.Trimestre > d1.Trimestre - x0 ? d1 : d0;
         
         focus.attr("transform", "translate(" + x(d.Trimestre) + "," + y(d[entidadFinanciera]) + ")");
-        focus.select("text").text(function() { return "Solicitudes:"+formatValue(d[entidadFinanciera])+" - "+ "Trimestre:"+ formatYMD(d.Trimestre)});
+        focus.select("text").attr("style", "left:").text(function() { return "Activas: "+formatValue(d[entidadFinanciera])+" - "+ "Fecha: "+ formatYMD(d.Trimestre)});
         focus.select(".x-hover-line").attr("x2", -x(d.Trimestre));
         focus.select(".y-hover-line").attr("y2", alto - y(d[entidadFinanciera]));
 

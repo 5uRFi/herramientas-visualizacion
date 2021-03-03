@@ -21,7 +21,8 @@
 .txtHome {
     font-family: 'Helvetica';
     font-size: 14px;
-    color: #001a33
+    color: #001a33;
+    text-align:justify;
 }
 
 .subTitGM {
@@ -34,7 +35,8 @@
 .txtGM {
     font-family: 'Helvetica';
     font-size: 15px;
-    color: #2e2e1f
+    color: #2e2e1f;
+    text-align:justify ;
 }
 
 .vizprev {
