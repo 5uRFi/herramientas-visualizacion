@@ -1,17 +1,22 @@
 $("#selector").on("change", () => {
     var select = $("#selector").val()
-    console.log(select)
+    console.log("valorSelect AQUIIII"+select)
     switch (select) {
-        case "banco":
-          $("#banco").css("display","inline-block")
+        case "porBanco":
+          $("#porBanco").css("display","inline-block")
+          //$('#porBanco').show(); 
           $("#todos").css("display","none")
-          console.log("habilitando banco")
-          $.css("display", "");
+          //$('#todos').hide(); 
+          console.log("habilitando porBanco")
+          document.getElementById("frameBanco").contentDocument.location.reload(true);
         break;
         case "todos":
           $("#todos").css("display","inline-block")
-          $("#banco").css("display","none")
+          //$('#todos').show(); 
+          $("#porBanco").css("display","none")
+          //$('#porBanco').hide(); 
           console.log("habilitando todos")
+          document.getElementById("frameTodos").contentDocument.location.reload(true);location.reload();
         break;
     }
   })

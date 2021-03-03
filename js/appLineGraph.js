@@ -1,10 +1,12 @@
-
-      $( document ).ready(function() {
+$( document ).ready(function() {
         console.log( "ready!" );
-        document.getElementById("banco").style.display = "none"; 
+        load(entidadFinanciera);
+
+        //document.getElementById("banco").style.display = "none"; 
         //$('#banco').hide();
         //$('.banco').hide()
-      });
+});
+
 
 graf = d3.select('#graf')
 ancho_total = graf.style('width').slice(0, -2)
@@ -29,7 +31,14 @@ g = svg.append('g')
         .attr('width', ancho + 'px')
         .attr('height', alto + 'px')
 
+        titulo =   g.append('text')
+        .attr('x', `${ancho / 2}px`)
+        .attr('y', '-5px')
+        .attr('text-anchor', 'middle')
+        .attr('class', 'tituloGrafica')
+        .attr('id', 'titulo-graf')
 
+container = document.getElementById("titulo-graf");
 
 var focus = g.append("g")
         .attr("class", "focus")
@@ -47,7 +56,7 @@ focus.append("text")
         .attr("x", 15)
       	.attr("dy", ".31em");
 
-//load tooltip
+/*tooltip
 var tooltip = d3.select("body").append("div")
 .attr("class", "tooltip")
 .style("display", "none");
@@ -62,20 +71,23 @@ tooltipLikes.append("span")
 
 var tooltipLikesValue = tooltipLikes.append("span")
 .attr("class", "tooltip-likes");
-
+*/
 
 svg.append("rect")
         .attr("transform", "translate(" + margins.left + "," + margins.top + ")")
         // .attr("class", "overlay")
-        .attr('fill', 'black')
-        .attr('fill-opacity', 0.25)
+        .attr('fill', 'white')
+        .attr('fill-opacity', 0.05)
         .attr("width", ancho)
         .attr("height", alto)
-        //on("mouseover", function() { focus.style("display", null); })
-        //.on("mouseout", function() { focus.style("display", "none"); })
+        .on("mouseover", function() { focus.style("display", null); })
+        .on("mouseout", function() { focus.style("display", "none"); })
+        .on("mousemove", e => mousemove(e))
+
+        /*tooltip
         .on("mouseover", function() { focus.style("display", null); tooltip.style("display", null);  })
         .on("mouseout", function() { focus.style("display", "none"); tooltip.style("display", "none"); })
-        .on("mousemove", e => mousemove(e))
+        tooltip*/
 
 
 // Variables Global_Objects
@@ -109,8 +121,8 @@ parser = d3.timeParse(d3.timeParse('%Y-%m-%d'))
 parserOne = d3.timeParse(d3.timeParse('%Y-%m-%d'))
 var formatYMD = d3.timeFormat('%Y-%m-%d')
 formatValue = d3.format(",")
-
 var bisectDate = d3.bisector((d) => d.Trimestre).left
+var startTitulo = "Tarjetas de crédito activas - "
 
 function load() {
   d3.csv('data/MxOverallNumCards.csv').then(data => {
@@ -151,6 +163,10 @@ function render(data) {
         .duration(500)
         .attr('stroke', color(entidadFinanciera))
         .attr('d', lineaGen(data))   
+
+    newContent = startTitulo + entidadFinanciera;
+    // Update titulo de grafica
+    container.innerHTML = newContent;
 }
 
 load(entidadFinanciera);
@@ -158,6 +174,7 @@ load(entidadFinanciera);
 function cambio() {
   entidadFinanciera = d3.select('#banco').node().value
   load(entidadFinanciera)
+   
 }
 
 function mousemove(e) {
@@ -180,9 +197,11 @@ function mousemove(e) {
         focus.select("text").text(function() { return "Solicitudes:"+formatValue(d[entidadFinanciera])+" - "+ "Trimestre:"+ formatYMD(d.Trimestre)});
         focus.select(".x-hover-line").attr("x2", -x(d.Trimestre));
         focus.select(".y-hover-line").attr("y2", alto - y(d[entidadFinanciera]));
+
+        /*tooltip
         tooltip.attr("style", "left:" + (x(d.Trimestre) + 64) + "px;top:" + y(d[entidadFinanciera]) + "px;");;
         tooltip.select(".tooltip-date").text("HOLA");
         tooltip.select(".tooltip-likes").text("MUNDO");
-
+        */
       }
 

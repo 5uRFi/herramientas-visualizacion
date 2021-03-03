@@ -16,8 +16,14 @@
     <p>Herramientas de Visualización</p>
 </nav>
 
-
   <div class="container-fluid mt-4">
+    <div class="row">
+      <div class="col-md-10" class="description text-justify">
+        <p class="subTitGM ">Tendencia del número de tarjetas de crédito activas en México</p>
+        <p class="txtGM">La incertidumbre causada por la pandemia de COVID19 provocó que entre marzo (con la Jornada Nacional de Sana Distancia) y septiembre se registraran bajas/cancelaciones de tarjetas de crédito.   Sin embargo, de enero a septiembre de 2020 el monto de las solicitudes de compra con tarjetas de crédito aumentó 10 por ciento desde los 59 mil 953 millones de pesos de 2019 a más de 66 mil 167 millones.  
+          La emergencia sanitaria benefició el uso de tarjetas de crédito y débito, pues con ella vino el confinamiento y el cierre de tiendas físicas para disminuir los contagios. Esto trasladó millones de compras al comercio electrónico.   Este mismo patrón se repite en Latinoamérica – particularmente en Argentina y Colombia.</p>
+      </div>
+    </div>
 
     <div class="row mb-8">
       <!-- select -->
@@ -25,7 +31,7 @@
         <div class="col-md-6">
           <select id="selector" class="form-control">
             <option selected value="todos">Todos</option>
-            <option value="banco">Por banco</option>
+            <option value="porBanco">Por banco</option>
           </select>
         </div>
       </div>
@@ -34,14 +40,15 @@
     </div>
 
     <!-- grafica -->
-    <div class="row mb-2" id="banco">
-          <iframe src="comparativa-tarjeta-credito.html" width="1200" height="800" style="border: none;"></iframe>
+    <div class="row mb-2" id="porBanco" style="display: none;">
+          <iframe id="frameBanco" src="comparativa-tarjeta-credito.html" width="1200" height="800" style="border: none;"></iframe>
           
           <!--
           <object data="comparativa-tarjeta-credito.html" width="1200" height="800"
             type="text/html">
           </object>
           -->
+          
     </div>
     <!-- /grafica -->
 
@@ -49,23 +56,15 @@
     <div class="row mb-2" id="todos">
       <div class="col-md-12">
         <div id="" class="">
-          <!--<iframe src="multiline.html" width="1200" height="800" style="border: none;"></iframe>-->
+          <iframe id="frameTodos" src="multiline.html" width="1200" height="800" style="border: none;"></iframe>
 
-          <object data="multiline.html" width="1200" height="800"
-            type="text/html">
+          <!--<object data="multiline.html" width="1200" height="800"
+            type="text/html">-->
           </object>
         </div>
       </div>
     </div>
     <!-- /grafica -->
-
-    <div class="row">
-      <div class="col-md-10 class=description text-justify">
-        <h4>Tendencia del número de tarjetas de crédito activas en México</h4>
-        <p>La incertidumbre causada por la pandemia de COVID19 provocó que entre marzo (con la Jornada Nacional de Sana Distancia) y septiembre se registraran bajas/cancelaciones de tarjetas de crédito.   Sin embargo, de enero a septiembre de 2020 el monto de las solicitudes de compra con tarjetas de crédito aumentó 10 por ciento desde los 59 mil 953 millones de pesos de 2019 a más de 66 mil 167 millones.  
-          La emergencia sanitaria benefició el uso de tarjetas de crédito y débito, pues con ella vino el confinamiento y el cierre de tiendas físicas para disminuir los contagios. Esto trasladó millones de compras al comercio electrónico.   Este mismo patrón se repite en Latinoamérica – particularmente en Argentina y Colombia.</p>
-      </div>
-    </div>
 
   </div>
 

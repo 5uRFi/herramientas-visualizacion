@@ -28,14 +28,13 @@ d3.csv('data/NumberOfCC.csv', function(data) {
         d.trimester = parser(d.trimester);
         d.noCards = + d.noCards;
     })
-    console.log(data)
+
     // Group the data: I want to draw one line per group
     var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
         .key(function(d) { return d.brand;})
-        .entries(data);    
-    console.log(sumstat)
+        .entries(data);        
 
-  // Add X axis --> it is a date format 
+    // Add X axis 
     var x = d3.scaleLinear()
             .domain(d3.extent(data, d => d.trimester))
             .range([ 0, width]);
@@ -45,32 +44,50 @@ d3.csv('data/NumberOfCC.csv', function(data) {
                     .ticks(5)
                     .tickFormat(d3.timeFormat("%Y-%m")));
 
-  // Add Y axis
-  var y = d3.scaleLinear()
-    .domain([0, d3.max(data, function(d) { return d.noCards; })])
-    .range([ height, 0 ]);
-  svg.append("g")
-    .call(d3.axisLeft(y));
+    // Add Y axis
+    var y = d3.scaleLinear()
+      .domain([0, d3.max(data, function(d) { return d.noCards; })])
+      .range([ height, 0 ]);
+    svg.append("g")
+      .call(d3.axisLeft(y));
 
-  // color palette
-  var res = sumstat.map(function(d){ return d.key }) // list of group names
-  var color = d3.scaleOrdinal()
-    .domain(res)
-    .range(d3.schemePaired)
+    // Color scalator
+    var res = sumstat.map(function(d){ return d.key }) // list of group names
+    var color = d3.scaleOrdinal()
+      .domain(res)
+      .range(d3.schemePaired)
 
-  // Draw the line
-  svg.selectAll(".line")
-      .data(sumstat)
-      .enter()
-      .append("path")
-        .attr("fill", "none")
-        .attr("stroke", function(d){ return color(d.key) })
-        .attr("stroke-width", 1.5)
-        .attr("d", function(d){
-          return d3.line()
-            .x(function(d) { return x(d.trimester); })
-            .y(function(d) { return y(+d.noCards); })
+    // Draw the line
+    svg.selectAll(".line")
+        .data(sumstat)
+        .enter()
+        .append("path")
+          .attr("fill", "none")
+          .attr("stroke", function(d){ return color(d.key) })
+          .attr("stroke-width", 1.5)
+          .attr("d", function(d){
+            return d3.line()
+              .x(function(d) { return x(d.trimester); })
+              .y(function(d) { return y(+d.noCards); })
             (d.values)
-        })
+          })
+    console.log("Lineas")
 
+    var i = 1
+    sumstat.forEach ((d, i) => {
+        svg.append('rect')
+            .attr('x', ((ancho_total/6) * 5) - 15)
+            .attr('y', (i*15) - 3)
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('fill', color(d.key))
+        svg.append('text')
+            .attr('x', (ancho_total/6) * 5)
+            .attr('y', 4 + (i*15))
+            .attr('text-anchor', 'start')
+            .attr("font-family", "sans-serif")
+            .style("font-size", 9)        
+            .attr('fill', 'grey')
+            .text(d.key)
+      })
 })
