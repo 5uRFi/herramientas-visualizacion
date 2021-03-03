@@ -1,7 +1,15 @@
+
+      $( document ).ready(function() {
+        console.log( "ready!" );
+        document.getElementById("banco").style.display = "none"; 
+        //$('#banco').hide();
+        //$('.banco').hide()
+      });
+
 graf = d3.select('#graf')
 ancho_total = graf.style('width').slice(0, -2)
 alto_total  = ancho_total * 0.5625
-margins = {
+var margins = {
   top: 30,
   left: 70,
   right: 15,
@@ -23,7 +31,7 @@ g = svg.append('g')
 
 
 
-focus = g.append("g")
+var focus = g.append("g")
         .attr("class", "focus")
         .style("display", "none")
 
@@ -40,7 +48,7 @@ focus.append("text")
       	.attr("dy", ".31em");
 
 //load tooltip
-var tooltip = svg.append("div")
+var tooltip = d3.select("body").append("div")
 .attr("class", "tooltip")
 .style("display", "none");
 
@@ -98,6 +106,10 @@ linea = g.append('path')
 var data
 
 parser = d3.timeParse(d3.timeParse('%Y-%m-%d'))
+parserOne = d3.timeParse(d3.timeParse('%Y-%m-%d'))
+var formatYMD = d3.timeFormat('%Y-%m-%d')
+formatValue = d3.format(",")
+
 var bisectDate = d3.bisector((d) => d.Trimestre).left
 
 function load() {
@@ -133,19 +145,15 @@ function load() {
 }
 
 function render(data) {
-
-
     linea.attr('fill', 'none')
         .attr('stroke-width', 3)
         .transition()
         .duration(500)
         .attr('stroke', color(entidadFinanciera))
-        .attr('d', lineaGen(data))
-
-        
+        .attr('d', lineaGen(data))   
 }
 
-load(entidadFinanciera)
+load(entidadFinanciera);
 
 function cambio() {
   entidadFinanciera = d3.select('#banco').node().value
@@ -167,26 +175,14 @@ function mousemove(e) {
         d0 = data[i - 1],
         d1 = data[i],
         d = x0 - d0.Trimestre > d1.Trimestre - x0 ? d1 : d0;
-
-        console.log("style", "left:" + (x(d.Trimestre) + 64) + "px;top:" + y(d[entidadFinanciera]) + "px;")
+        
         focus.attr("transform", "translate(" + x(d.Trimestre) + "," + y(d[entidadFinanciera]) + ")");
-        focus.select("text").text(function() { return d[entidadFinanciera]; });
+        focus.select("text").text(function() { return "Solicitudes:"+formatValue(d[entidadFinanciera])+" - "+ "Trimestre:"+ formatYMD(d.Trimestre)});
         focus.select(".x-hover-line").attr("x2", -x(d.Trimestre));
         focus.select(".y-hover-line").attr("y2", alto - y(d[entidadFinanciera]));
         tooltip.attr("style", "left:" + (x(d.Trimestre) + 64) + "px;top:" + y(d[entidadFinanciera]) + "px;");;
-        tooltip.select(".tooltip-date").text((d.Trimestre));
-        tooltip.select(".tooltip-likes").text(d[entidadFinanciera]);
+        tooltip.select(".tooltip-date").text("HOLA");
+        tooltip.select(".tooltip-likes").text("MUNDO");
+
       }
-/*
-      function mousemove() {
-        var x0 = x.invert(d3.pointer(this)[0]),
-            i = bisectDate(data, x0, 1),
-            d0 = data[i - 1],
-            d1 = data[i],
-            d = x0 - d0.Trimestre > d1.Trimestre - x0 ? d1 : d0;
-        focus.attr("transform", "translate(" + x(d.Trimestre) + "," + y(d[entidadFinanciera]) + ")");
-        tooltip.attr("style", "left:" + (x(d.Trimestre) + 64) + "px;top:" + y(d[entidadFinanciera]) + "px;");
-        
-        tooltip.select(".tooltip-date").text((d.Trimestre));
-        tooltip.select(".tooltip-likes").text(d[entidadFinanciera]);
-    }*/
+
