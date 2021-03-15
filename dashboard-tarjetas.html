@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Proyecto</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/styles.css">
+      </head>
+<body>
+    <nav class="d-flex justify-content-between navbar navbar-light bg-light shadow">
+        <a href="index.html">
+            <img src="https://www.unir.net/wp-content/uploads/2020/03/logo-horizontal-1536x925.png" class="logoUNIR">
+        </a>
+        <p>Herramientas de Visualización</p>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row justify-content-md-center">
+            <div class="col-md-11">              
+                <div id="description" class="description">
+                    <p class="subTitGM ">Tendencia del número de tarjetas de crédito activas en México</p>
+                    <p class="txtGM">La incertidumbre causada por la pandemia de COVID19 provocó que entre marzo (con la Jornada Nacional de Sana Distancia) y septiembre se registraran bajas/cancelaciones de tarjetas de crédito.   Sin embargo, de enero a septiembre de 2020 el monto de las solicitudes de compra con tarjetas de crédito aumentó 10 por ciento desde los 59 mil 953 millones de pesos de 2019 a más de 66 mil 167 millones.  
+                    La emergencia sanitaria benefició el uso de tarjetas de crédito y débito, pues con ella vino el confinamiento y el cierre de tiendas físicas para disminuir los contagios. Esto trasladó millones de compras al comercio electrónico.   Este mismo patrón se repite en Latinoamérica – particularmente en Argentina y Colombia.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+    <div class="row justify-content-md-center">
+        <div class="col-md-11">
+            <div id="myExcelDiv" style="width: 1550px; height: 1650px; margin:5px;"></div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- * This code uses the Microsoft Office Excel Javascript object model to programmatically insert the
+        * Excel Web App into a div with id=myExcelDiv. The full API is documented at
+        * https://msdn.microsoft.com/es-MX/library/hh315812.aspx. There you can find out how to programmatically get
+        * values from your Excel file and how to use the rest of the object model. -->
+    <script type="text/javascript" src="https://onedrive.live.com/embed?resid=81ABE0989C7F6449%21932&authkey=%21ALOsJMfH5KzxEss&em=3&wdItem=%22dash%22&wdDivId=%22myExcelDiv%22"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="js/dashboard-tarjetas.js"></script>
+      
+</body>
+</html>
